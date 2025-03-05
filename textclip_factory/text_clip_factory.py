@@ -47,8 +47,8 @@ class TextClipFactory:
         
         # Define effect mapping
         effect_mapping: Dict[str, Callable] = {
-            'fadein': lambda clip, duration: FadeIn(duration).apply(clip),
-            'fadeout': lambda clip, duration: FadeOut(duration).apply(clip) if clip.duration else clip,
+            'fadein': lambda clip, duration: FadeIn(min(duration, clip.duration if clip.duration else duration)).apply(clip),
+            'fadeout': lambda clip, duration: FadeOut(min(duration, clip.duration if clip.duration else duration)).apply(clip) if clip.duration else clip,
             'blackwhite': lambda clip, _: BlackAndWhite().apply(clip),
             'mirrorx': lambda clip, _: MirrorX().apply(clip),
             'mirrory': lambda clip, _: MirrorY().apply(clip),
@@ -57,14 +57,15 @@ class TextClipFactory:
         
         # Apply effects
         effects = parameters.get('effects', [])
-        fade_time = parameters.get('fade_duration', 0.5)
-        resize_scale = parameters.get('resize_scale', 1.0)
         
         for effect in effects:
-            if effect in effect_mapping:
-                if effect == 'fadeout' and text_clip.duration is None:
+            effect_name, *effect_value = effect.split(',')
+            effect_value = float(effect_value[0]) if effect_value else None
+            
+            if effect_name in effect_mapping:
+                if effect_name == 'fadeout' and text_clip.duration is None:
                     raise ValueError("Cannot apply 'fadeout' because the clip duration is not set.")
-                text_clip = effect_mapping[effect](text_clip, fade_time if 'fade' in effect else resize_scale)
+                text_clip = effect_mapping[effect_name](text_clip, effect_value if effect_value is not None else 0.5)
         
         return text_clip
     
