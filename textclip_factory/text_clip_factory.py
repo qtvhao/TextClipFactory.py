@@ -1,4 +1,4 @@
-from moviepy.editor import TextClip
+from moviepy import TextClip
 from typing import Dict, Any
 
 class TextClipFactory:
