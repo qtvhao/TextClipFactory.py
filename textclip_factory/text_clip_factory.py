@@ -30,7 +30,17 @@ class TextClipFactory:
         if text_clip_params['method'] != 'caption':
             text_clip_params['font_size'] = parameters.get('fontsize', 24)
 
-        return TextClip(**text_clip_params)
+        text_clip = TextClip(**text_clip_params)
+
+        # Apply start and end times if provided
+        start_time = parameters.get('start_time', 0)
+        end_time = parameters.get('end_time', None)
+        
+        text_clip = text_clip.set_start(start_time)
+        if end_time is not None:
+            text_clip = text_clip.set_duration(end_time - start_time)
+
+        return text_clip
     
     @staticmethod
     def validate_parameters(parameters: Dict[str, Any]) -> None:
@@ -48,3 +58,10 @@ class TextClipFactory:
         
         if 'size' in parameters and (not isinstance(parameters['size'], tuple) or len(parameters['size']) != 2):
             raise ValueError("The 'size' parameter must be a tuple of two integers representing width and height.")
+        
+        if 'start_time' in parameters and (not isinstance(parameters['start_time'], (int, float)) or parameters['start_time'] < 0):
+            raise ValueError("The 'start_time' parameter must be a non-negative number.")
+        
+        if 'end_time' in parameters:
+            if (not isinstance(parameters['end_time'], (int, float)) or parameters['end_time'] <= parameters.get('start_time', 0)):
+                raise ValueError("The 'end_time' parameter must be greater than 'start_time'.")
