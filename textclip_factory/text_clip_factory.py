@@ -1,4 +1,4 @@
-from moviepy import *
+from moviepy.editor import TextClip
 from typing import Dict, Any
 
 class TextClipFactory:
@@ -36,9 +36,9 @@ class TextClipFactory:
         start_time = parameters.get('start_time', 0)
         end_time = parameters.get('end_time', None)
         
-        text_clip = text_clip.set_start(start_time)
+        text_clip = text_clip.with_start(start_time)
         if end_time is not None:
-            text_clip = text_clip.set_duration(end_time - start_time)
+            text_clip = text_clip.with_duration(end_time - start_time)
 
         return text_clip
     
