@@ -1,5 +1,6 @@
 from moviepy import TextClip
-from typing import Dict, Any
+from moviepy.video.fx import FadeIn, FadeOut, BlackAndWhite, MirrorX, MirrorY, Resize
+from typing import Dict, Any, Callable
 
 class TextClipFactory:
     """
@@ -20,26 +21,51 @@ class TextClipFactory:
             'text': parameters['text'],
             'font': parameters.get('font', 'Arial'),
             'color': parameters.get('color', 'white'),
-            'stroke_width': parameters.get('stroke_width', 0),
+            'stroke_width': parameters.get('stroke_width', 2),
             'stroke_color': parameters.get('stroke_color', 'black'),
-            'size': parameters.get('size', (640, 480)),  # Default size
-            'method': parameters.get('method', 'label'),
-            'text_align': parameters.get('align', 'center')
+            'size': parameters.get('size', (2560, 1440)),  # Default size
+            'method': parameters.get('method', 'caption'),
+            'horizontal_align': parameters.get('horizontal_align', 'center'),
+            'text_align': parameters.get('align', 'center'),
+            'interline': parameters.get('vertical_align', 5),
+            'bg_color': parameters.get('bg_color', None),
+            'margin': parameters.get('margin', (None, 10)),
+            'font_size': parameters.get('fontsize', 48),
         }
         
-        if text_clip_params['method'] != 'caption':
-            text_clip_params['font_size'] = parameters.get('fontsize', 24)
-
         text_clip = TextClip(**text_clip_params)
 
         # Apply start and end times if provided
         start_time = parameters.get('start_time', 0)
         end_time = parameters.get('end_time', None)
+        duration = parameters.get('duration', 5)  # Default duration to 5 seconds
         
         text_clip = text_clip.with_start(start_time)
         if end_time is not None:
-            text_clip = text_clip.with_duration(end_time - start_time)
-
+            duration = end_time - start_time
+        text_clip = text_clip.with_duration(duration)
+        
+        # Define effect mapping
+        effect_mapping: Dict[str, Callable] = {
+            'fadein': lambda clip, duration: FadeIn(duration).apply(clip),
+            'fadeout': lambda clip, duration: FadeOut(duration).apply(clip) if clip.duration else clip,
+            'blackwhite': lambda clip, _: BlackAndWhite().apply(clip),
+            'mirrorx': lambda clip, _: MirrorX().apply(clip),
+            'mirrory': lambda clip, _: MirrorY().apply(clip),
+            'resize': lambda clip, scale: Resize(scale).apply(clip)
+        }
+        
+        # Apply effects
+        effects = parameters.get('effects', [])
+        fade_time = parameters.get('fade_duration', 0.5)
+        resize_scale = parameters.get('resize_scale', 1.0)
+        
+        for effect in effects:
+            if effect in effect_mapping:
+                if effect == 'fadeout' and text_clip.duration is None:
+                    raise ValueError("Cannot apply 'fadeout' because the clip duration is not set.")
+                text_clip = effect_mapping[effect](text_clip, fade_time if 'fade' in effect else resize_scale)
+        
         return text_clip
     
     @staticmethod
@@ -56,8 +82,8 @@ class TextClipFactory:
         if 'fontsize' in parameters and (not isinstance(parameters['fontsize'], int) or parameters['fontsize'] <= 0):
             raise ValueError("The 'fontsize' parameter must be a positive integer.")
         
-        if 'size' in parameters and (not isinstance(parameters['size'], tuple) or len(parameters['size']) != 2):
-            raise ValueError("The 'size' parameter must be a tuple of two integers representing width and height.")
+        if 'size' in parameters and (not isinstance(parameters['size'], tuple) or len(parameters['size']) != 2 or not all(isinstance(i, int) and i > 0 for i in parameters['size'])):
+            raise ValueError("The 'size' parameter must be a tuple of two positive integers representing width and height.")
         
         if 'start_time' in parameters and (not isinstance(parameters['start_time'], (int, float)) or parameters['start_time'] < 0):
             raise ValueError("The 'start_time' parameter must be a non-negative number.")
