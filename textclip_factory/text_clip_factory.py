@@ -19,13 +19,13 @@ class TextClipFactory:
         text_clip_params = {
             'text': parameters['text'],
             'font': parameters.get('font', 'Arial'),
-            'fontsize': parameters.get('fontsize', 24),
+            'font_size': parameters.get('fontsize', 24),
             'color': parameters.get('color', 'white'),
             'stroke_width': parameters.get('stroke_width', 0),
             'stroke_color': parameters.get('stroke_color', 'black'),
-            'size': parameters.get('size', None),
+            'size': parameters.get('size', (640, 480)),  # Default size
             'method': parameters.get('method', 'label'),
-            'align': parameters.get('align', 'center')
+            'text_align': parameters.get('align', 'center')
         }
 
         return TextClip(**text_clip_params)
