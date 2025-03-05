@@ -1,0 +1,1 @@
+# TextClipFactory.py
