@@ -125,3 +125,13 @@ class TextClipFactory:
         image_clip = ImageClip(image_file).with_duration(duration)
         final_video = CompositeVideoClip([blank_video, image_clip] + word_clips)
         return final_video
+
+    def merge_consecutive_texts(text_data):
+        merged_texts = []
+        for entry in text_data:
+            if merged_texts and merged_texts[-1]["end"] == entry["start"]:
+                merged_texts[-1]["text"] += " " + entry["text"]
+                merged_texts[-1]["end"] = entry["end"]
+            else:
+                merged_texts.append(entry)
+        return merged_texts
