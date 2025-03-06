@@ -95,7 +95,7 @@ class TextClipFactory:
                 raise ValueError("The 'end_time' parameter must be greater than 'start_time'.")
     
     @staticmethod
-    def process_video(text_data: List[Dict[str, Any]], video_size, duration, image_file, text_config: Dict[str, Any] = None) -> CompositeVideoClip:
+    def create_video_clip(text_data: List[Dict[str, Any]], video_size: tuple, duration: int, image_file: str, text_config: Dict[str, Any] = None) -> CompositeVideoClip:
         """
         Creates a video with synchronized text overlay and returns the video clip.
         
