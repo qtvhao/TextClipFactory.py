@@ -19,7 +19,7 @@ class TextClipFactory:
         TextClipFactory.validate_parameters(parameters)
         
         text_clip_params = {
-            'text': parameters['text'],
+            'text': parameters['word'],
             'font': parameters.get('font', 'Roboto-Regular'),
             'color': parameters.get('color', 'white'),
             'stroke_width': parameters.get('stroke_width', 2),
@@ -111,7 +111,7 @@ class TextClipFactory:
         word_clips = [
             TextClipFactory.create_text_clip({
                 "effects": ["fadein,0.06", "fadeout,0.06"],
-                "text": word["text"],
+                "word": word["word"],
                 "fontsize": text_config.get("fontsize", 50),
                 "stroke_width": text_config.get("stroke_width", 3),
                 "color": text_config.get("color", "white"),
@@ -130,7 +130,7 @@ class TextClipFactory:
         merged_texts = []
         for entry in text_data:
             if merged_texts and merged_texts[-1]["end"] == entry["start"]:
-                merged_texts[-1]["text"] += " " + entry["text"]
+                merged_texts[-1]["word"] += " " + entry["word"]
                 merged_texts[-1]["end"] = entry["end"]
             else:
                 merged_texts.append(entry)
