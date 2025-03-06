@@ -78,8 +78,8 @@ class TextClipFactory:
         :param parameters: Dictionary containing text clip properties.
         :raises ValueError: If required parameters are missing or invalid.
         """
-        if 'text' not in parameters or not isinstance(parameters['text'], str) or not parameters['text'].strip():
-            raise ValueError("The 'text' parameter is required and must be a non-empty string.")
+        if 'word' not in parameters or not isinstance(parameters['word'], str) or not parameters['word'].strip():
+            raise ValueError("The 'word' parameter is required and must be a non-empty string.")
         
         if 'fontsize' in parameters and (not isinstance(parameters['fontsize'], int) or parameters['fontsize'] <= 0):
             raise ValueError("The 'fontsize' parameter must be a positive integer.")
