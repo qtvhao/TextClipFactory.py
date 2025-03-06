@@ -19,7 +19,7 @@ class TextClipFactory:
         
         text_clip_params = {
             'text': parameters['text'],
-            'font': parameters.get('font', 'NotoMono-Regular'),
+            'font': parameters.get('font', 'Roboto-Regular'),
             'color': parameters.get('color', 'white'),
             'stroke_width': parameters.get('stroke_width', 2),
             'stroke_color': parameters.get('stroke_color', 'black'),
