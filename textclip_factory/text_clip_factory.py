@@ -19,7 +19,7 @@ class TextClipFactory:
         
         text_clip_params = {
             'text': parameters['text'],
-            'font': parameters.get('font', 'Arial'),
+            'font': parameters.get('font', 'NotoMono-Regular'),
             'color': parameters.get('color', 'white'),
             'stroke_width': parameters.get('stroke_width', 2),
             'stroke_color': parameters.get('stroke_color', 'black'),
@@ -56,7 +56,7 @@ class TextClipFactory:
         }
         
         # Apply effects
-        effects = parameters.get('effects', [])
+        effects = parameters.get('effects', ["fadein,0.2", "fadeout,0.2"])
         
         for effect in effects:
             effect_name, *effect_value = effect.split(',')
