@@ -1,6 +1,7 @@
 from moviepy import TextClip
 from moviepy.video.fx import FadeIn, FadeOut, BlackAndWhite, MirrorX, MirrorY, Resize
-from typing import Dict, Any, Callable
+from moviepy import CompositeVideoClip, ColorClip, ImageClip
+from typing import Dict, Any, Callable, List
 
 class TextClipFactory:
     """
@@ -92,3 +93,35 @@ class TextClipFactory:
         if 'end_time' in parameters:
             if (not isinstance(parameters['end_time'], (int, float)) or parameters['end_time'] <= parameters.get('start_time', 0)):
                 raise ValueError("The 'end_time' parameter must be greater than 'start_time'.")
+    
+    @staticmethod
+    def process_video(text_data: List[Dict[str, Any]], video_size, duration, image_file, text_config: Dict[str, Any] = None) -> CompositeVideoClip:
+        """
+        Creates a video with synchronized text overlay and returns the video clip.
+        
+        :param text_data: List of dictionaries containing text information and timing.
+        :param video_size: Tuple specifying the video resolution.
+        :param duration: Duration of the final video.
+        :param image_file: Path to the image file to use in the video.
+        :param text_config: Dictionary with customizable text properties like stroke, fontsize, and color.
+        :return: CompositeVideoClip with text overlays.
+        """
+        text_config = text_config or {}
+        
+        word_clips = [
+            TextClipFactory.create_text_clip({
+                "effects": ["fadein,0.06", "fadeout,0.06"],
+                "text": word["text"],
+                "fontsize": text_config.get("fontsize", 50),
+                "stroke_width": text_config.get("stroke_width", 3),
+                "color": text_config.get("color", "white"),
+                "stroke_color": text_config.get("stroke_color", "black"),
+                "start_time": word["start"],
+                "end_time": word["end"]
+            }).with_layer_index(1) for word in text_data
+        ]
+        
+        blank_video = ColorClip(size=video_size, color=(0, 0, 0), duration=duration)
+        image_clip = ImageClip(image_file).with_duration(duration)
+        final_video = CompositeVideoClip([blank_video, image_clip] + word_clips)
+        return final_video
