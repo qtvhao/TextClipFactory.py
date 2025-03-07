@@ -112,6 +112,7 @@ class TextClipFactory:
             TextClipFactory.create_text_clip({
                 "effects": ["fadein,0.06", "fadeout,0.06"],
                 "word": word["word"],
+                "size": video_size,
                 "fontsize": text_config.get("fontsize", 50),
                 "stroke_width": text_config.get("stroke_width", 3),
                 "color": text_config.get("color", "white"),
