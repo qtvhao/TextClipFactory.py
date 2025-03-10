@@ -124,7 +124,7 @@ class TextClipFactory:
         
         blank_video = ColorClip(size=video_size, color=(0, 0, 0), duration=duration)
 
-        if isinstance(image_file, ImageClip):
+        if isinstance(image_file, ImageClip) or isinstance(image_file, CompositeVideoClip):
             image_clip = image_file.with_duration(duration)
         else:
             image_clip = ImageClip(image_file).with_duration(duration)
