@@ -95,7 +95,7 @@ class TextClipFactory:
                 raise ValueError("The 'end_time' parameter must be greater than 'start_time'.")
     
     @staticmethod
-    def create_video_clip(text_data: List[Dict[str, Any]], video_size: tuple, duration: int, image_file: Any, text_config: Dict[str, Any] = None) -> CompositeVideoClip:
+    def create_video_clip(text_data: List[Dict[str, Any]], video_size: tuple, image_file: Any, text_config: Dict[str, Any] = None) -> CompositeVideoClip:
         """
         Creates a video with synchronized text overlay and returns the video clip.
         
@@ -110,11 +110,11 @@ class TextClipFactory:
         
         word_clips = [
             TextClipFactory.create_text_clip({
-                "effects": ["fadein,0.06", "fadeout,0.06"],
+                "effects": ["fadein,0.02", "fadeout,0.02"],
                 "word": word["word"],
                 "size": video_size,
                 "fontsize": text_config.get("fontsize", 50),
-                "stroke_width": text_config.get("stroke_width", 3),
+                "stroke_width": text_config.get("stroke_width", 1),
                 "color": text_config.get("color", "white"),
                 "stroke_color": text_config.get("stroke_color", "black"),
                 "start_time": word["start"],
@@ -122,12 +122,12 @@ class TextClipFactory:
             }).with_layer_index(1) for word in text_data
         ]
         
-        blank_video = ColorClip(size=video_size, color=(0, 0, 0), duration=duration)
+        blank_video = ColorClip(size=video_size, color=(0, 0, 0))
 
         if isinstance(image_file, ImageClip) or isinstance(image_file, CompositeVideoClip):
-            image_clip = image_file.with_duration(duration)
+            image_clip = image_file
         else:
-            image_clip = ImageClip(image_file).with_duration(duration)
+            image_clip = ImageClip(image_file)
         
         final_video = CompositeVideoClip([blank_video, image_clip] + word_clips)
         return final_video
